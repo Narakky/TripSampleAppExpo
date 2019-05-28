@@ -1,16 +1,34 @@
 import React from 'react';
 import { StyleSheet, View, Text } from 'react-native';
-import { Button } from 'react-native-elements';
+import { ButtonGroup } from 'react-native-elements';
 
 class HomeScreen extends React.Component {
-  render() {
-    return (
-      <View style={{ flex: 1, justifyContent: 'center' }}>
-        <Text>This is HomeScreen!!!</Text>
+  constructor(props) {
+    super(props);
+  
+    this.state = {
+       selectedIndex: 0,
+    };
+  }
+  
+  onButtonGroupPress = (selectedIndex) => {
+    this.setState({ selectedIndex });
+  }
 
-        <Button
-          title='詳細画面に遷移'
-          onPress={() => this.props.navigation.navigate('detail')}
+  render() {
+    const buttonList = [
+      'すべて',
+      '良い（0）',
+      '普通（0）',
+      '悪い（0）',
+    ];
+
+    return (
+      <View style={{ flex: 1 }}>
+        <ButtonGroup
+          buttons={buttonList}
+          selectedIndex={this.state.selectedIndex}
+          onPress={this.onButtonGroupPress}
         />
       </View>
     );
