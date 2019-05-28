@@ -136,11 +136,34 @@ class HomeScreen extends React.Component {
   }
 
   render() {
+    let nGreat = 0;
+    let nGood = 0;
+    let nPoor = 0;
+
+    for (let i = 0 ; i < allReviewsTmp.length ; i++) {
+      switch (allReviewsTmp[i].rank) {
+        case GREAT:
+          nGreat++;
+          break;
+
+        case GOOD:
+          nGood++;
+          break;
+
+        case POOR:
+          nPoor++;
+          break;
+      
+        default:
+          break;
+      }
+    }
+
     const buttonList = [
-      'すべて',
-      '良い（0）',
-      '普通（0）',
-      '悪い（0）',
+      `すべて（${allReviewsTmp.length}）`,
+      `良い（${nGreat}）`,
+      `普通（${nGood}）`,
+      `悪い（${nPoor}）`,
     ];
 
     return (
@@ -150,7 +173,6 @@ class HomeScreen extends React.Component {
           selectedIndex={this.state.selectedIndex}
           onPress={this.onButtonGroupPress}
         />
-
         {this.renderReviews()}
       </View>
     );
