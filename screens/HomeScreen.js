@@ -2,6 +2,9 @@ import React from 'react';
 import { StyleSheet, View, Text } from 'react-native';
 import { ButtonGroup, ListItem } from 'react-native-elements';
 import { ScrollView } from 'react-native-gesture-handler';
+import { connect } from 'react-redux';
+
+import * as actions from '../actions';
 
 const ALL_INDEX = 0;
 const GREAT = 'sentiment-very-satisfied';
@@ -14,42 +17,6 @@ const POOR = 'sentiment-dissatisfied';
 const POOR_INDEX = 3;
 const POOR_COLOR = 'blue';
 
-const allReviewsTmp = [
-  {
-    country: 'USA',
-    dateFrom: 'Jan/15/2018',
-    dateTo: 'Jan/25/2018',
-    imageURIs: [
-      require('../assets/add_image_placeholder.png'),
-      require('../assets/add_image_placeholder.png'),
-      require('../assets/add_image_placeholder.png'),
-    ],
-    rank: GREAT
-  },
-  {
-    country: 'USA',
-    dateFrom: 'Feb/15/2018',
-    dateTo: 'Feb/25/2018',
-    imageURIs: [
-      require('../assets/add_image_placeholder.png'),
-      require('../assets/add_image_placeholder.png'),
-      require('../assets/add_image_placeholder.png'),
-    ],
-    rank: GOOD
-  },
-  {
-    country: 'USA',
-    dateFrom: 'Mar/15/2018',
-    dateTo: 'Mar/25/2018',
-    imageURIs: [
-      require('../assets/add_image_placeholder.png'),
-      require('../assets/add_image_placeholder.png'),
-      require('../assets/add_image_placeholder.png'),
-    ],
-    rank: POOR
-  },
-];
-
 class HomeScreen extends React.Component {
   constructor(props) {
     super(props);
@@ -57,6 +24,11 @@ class HomeScreen extends React.Component {
     this.state = {
        selectedIndex: ALL_INDEX,
     };
+  }
+
+  componentDidMount() {
+    // Action Creatorを呼ぶ
+    this.props.fetchAllReviews();
   }
   
   onButtonGroupPress = (selectedIndex) => {
@@ -90,11 +62,11 @@ class HomeScreen extends React.Component {
     let rankedReviews = [];
 
     if (this.state.selectedIndex === ALL_INDEX) {
-      rankedReviews = allReviewsTmp;
+      rankedReviews = this.props.allReviews;
     } else {
-      for (let i = 0 ; i < allReviewsTmp.length ; i++) {
-        if (allReviewsTmp[i].rank === reviewRank) {
-          rankedReviews.push(allReviewsTmp[i]);
+      for (let i = 0 ; i < this.props.allReviews.length ; i++) {
+        if (this.props.allReviews[i].rank === reviewRank) {
+          rankedReviews.push(this.props.allReviews[i]);
         }
       }
     }
@@ -140,8 +112,8 @@ class HomeScreen extends React.Component {
     let nGood = 0;
     let nPoor = 0;
 
-    for (let i = 0 ; i < allReviewsTmp.length ; i++) {
-      switch (allReviewsTmp[i].rank) {
+    for (let i = 0 ; i < this.props.allReviews.length ; i++) {
+      switch (this.props.allReviews[i].rank) {
         case GREAT:
           nGreat++;
           break;
@@ -160,7 +132,7 @@ class HomeScreen extends React.Component {
     }
 
     const buttonList = [
-      `すべて（${allReviewsTmp.length}）`,
+      `すべて（${this.props.allReviews.length}）`,
       `良い（${nGreat}）`,
       `普通（${nGood}）`,
       `悪い（${nPoor}）`,
@@ -179,4 +151,10 @@ class HomeScreen extends React.Component {
   }
 }
 
-export default HomeScreen;
+const mapStateToProps = (state) => {
+  return {
+    allReviews: state.review.allReviews
+  };
+};
+
+export default connect(mapStateToProps, actions)(HomeScreen);
