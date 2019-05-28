@@ -63,6 +63,10 @@ class HomeScreen extends React.Component {
     this.setState({ selectedIndex });
   }
 
+  onListItemPress = (selectedReview) => {
+    this.props.navigation.navigate('detail');
+  }
+
   renderReviews() {
     let reviewRank;
 
@@ -123,6 +127,7 @@ class HomeScreen extends React.Component {
               leftIcon={{ name: review.rank, color: reviewColor }}
               title={review.country}
               subtitle={`${review.dateFrom} ~ ${review.dateTo}`}
+              onPress={() => this.onListItemPress(review)}
             />
           );
         })}
