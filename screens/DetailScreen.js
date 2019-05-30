@@ -1,7 +1,7 @@
 import Geocoder from 'react-native-geocoding';
 import React from 'react';
 import {
-  ScrollView, View, Text, ActivityIndicator,
+  ScrollView, View, Text, ActivityIndicator, Image, TouchableOpacity, Modal,
   Dimensions, Platform
 } from 'react-native';
 import { MapView } from 'expo';
@@ -24,6 +24,10 @@ class DetailScreen extends React.Component {
         latitudeDelta: MAP_ZOOM_RATE,
         longitudeDelta: MAP_ZOOM_RATE * 2.25,
       },
+      // モーダル画面を表示するか否か
+      modalVisible: false,
+      // モーダルに表示する画像の場所
+      modalImageURI: require('../assets/image_placeholder.png'),
     };
   }
 
@@ -41,6 +45,43 @@ class DetailScreen extends React.Component {
     });
   }
 
+  renderImages() {
+    // Placeholder画像
+    const imagesArray = [
+      { isImage: false, uri: require('../assets/image_placeholder.png') },
+      { isImage: false, uri: require('../assets/image_placeholder.png') },
+      { isImage: false, uri: require('../assets/image_placeholder.png') },
+    ];
+
+    for (let i = 0; i<this.props.detailReview.imageURIs.length; i++) {
+      imagesArray[i].isImage = true;
+      imagesArray[i].uri = this.props.detailReview.imageURIs[i];
+    }
+
+    return (
+      // 横方向に個数分繰り返す
+      <View style={{ flexDirection: 'row' }}>
+        { imagesArray.map((image, index) => {
+          return (
+            <TouchableOpacity
+              key={index}
+              onPress={() => this.setState({
+                modalVisible: image.isImage,
+                modalImageURI: image.uri
+              })
+              }
+            >
+              <Image
+                style={{ width: SCREEN_WIDTH/3, height: SCREEN_WIDTH/3 }}
+                source={image.uri}
+              />
+            </TouchableOpacity>
+          );
+        }) }
+      </View>
+    );
+  }
+
   render() {
     if (this.state.isMapLoaded === false) {
       return (
@@ -52,6 +93,27 @@ class DetailScreen extends React.Component {
 
     return (
       <View style={{ flex: 1 }}>
+        <Modal
+          // モーダルを表示するかどうか
+          visible={this.state.modalVisible}
+          // モーダルを表示する際のアニメーション
+          animationType="fade"
+          // モーダルの背景を半透明にするかどうか
+          transparent={false}
+        >
+          <View style={{ flex: 1, backgroundColor: 'black' }}>
+            <TouchableOpacity
+              style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}
+              onPress={() => this.setState({ modalVisible: false })}
+            >
+              <Image
+                style={{ height: SCREEN_WIDTH, width: SCREEN_WIDTH }}
+                source={this.state.modalImageURI}
+              />
+            </TouchableOpacity>
+          </View>
+        </Modal>
+
         <ScrollView>
           <View style={{ alignItems: 'center', padding: 20 }}>
             <Text style={{ fontSize: 30, padding: 5 }}>{ this.props.detailReview.country }</Text>
@@ -64,6 +126,8 @@ class DetailScreen extends React.Component {
             cacheEnabled={Platform.OS === 'android'}
             initialRegion={this.state.initialRegion}
           />
+
+          { this.renderImages() }
         </ScrollView>
       </View>
     );
