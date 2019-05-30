@@ -1,8 +1,31 @@
 import React from 'react';
-import { StyleSheet, View, Text } from 'react-native';
+import {
+  StyleSheet, View, Text,
+  AsyncStorage, Alert
+} from 'react-native';
 import { Button } from 'react-native-elements';
+import { connect } from 'react-redux';
+
+import * as actions from '../actions';
 
 class ProfileScreen extends React.Component {
+  onResetButtonPress = async (key) => {
+   await AsyncStorage.removeItem(key);
+
+    if (key === 'allReviews') {
+      this.props.fetchAllReviews();
+    }
+
+   Alert.alert(
+     'Reset',
+     `'${key}' in AsyncStorage has been removed.`,
+     [
+       { text: 'OK' },
+     ],
+     { cancelable: false }
+   );
+  }
+
   render() {
     return (
       <View style={{ flex: 1, justifyContent: 'center' }}>
@@ -17,4 +40,10 @@ class ProfileScreen extends React.Component {
   }
 }
 
-export default ProfileScreen;
+const mapStateToProps = (state) => {
+  return {
+    allReviews: state.review.allReviews,
+  };
+};
+
+export default connect(mapStateToProps, actions)(ProfileScreen);
