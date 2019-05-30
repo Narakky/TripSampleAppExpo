@@ -24,6 +24,8 @@
     ],
     "ios": {
       "supportsTablet": true
-    }
+    },
+    "description": "Expoサンプルアプリ",
+    "githubUrl": "https://github.com/Narakky/TripSampleAppExpo"
   }
 }
