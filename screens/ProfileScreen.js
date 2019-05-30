@@ -18,7 +18,7 @@ class ProfileScreen extends React.Component {
 
    Alert.alert(
      'Reset',
-     `'${key}' in AsyncStorage has been removed.`,
+     `AsyncStorage内の'${key}'を削除しました。`,
      [
        { text: 'OK' },
      ],
@@ -29,12 +29,28 @@ class ProfileScreen extends React.Component {
   render() {
     return (
       <View style={{ flex: 1, justifyContent: 'center' }}>
-        <Text>This is ProfileScreen!!</Text>
+        <View style={{ padding: 20 }}>
+          <Button
+            title="設定画面1へ遷移"
+            onPress={() => this.props.navigation.navigate('setting1')}
+          />
+        </View>
+        
+        <View style={{ padding: 20 }}>
+          <Button
+            title="ウェルカム画面を表示するようにする"
+            buttonStyle={{ backgroundColor: 'red' }}
+            onPress={() => this.onResetButtonPress('isInitialized')}
+          />
+        </View>
 
-        <Button
-          title="設定画面1へ遷移"
-          onPress={() => this.props.navigation.navigate('setting1')}
-        />
+        <View style={{ padding: 20 }}>
+          <Button
+            title="すべての評価データを削除する"
+            buttonStyle={{ backgroundColor: 'red' }}
+            onPress={() => this.onResetButtonPress('allReviews')}
+          />
+        </View>
       </View>
     );
   }
