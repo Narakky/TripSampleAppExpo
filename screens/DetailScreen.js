@@ -1,6 +1,7 @@
+import Geocoder from 'react-native-geocoding';
 import React from 'react';
 import {
-  ScrollView, View, Text,
+  ScrollView, View, Text, ActivityIndicator,
   Dimensions, Platform
 } from 'react-native';
 import { MapView } from 'expo';
@@ -16,6 +17,7 @@ class DetailScreen extends React.Component {
     super(props);
   
     this.state = {
+      isMapLoaded: false,
       initialRegion: {
         latitude: 33.595361,
         longitude: 130.362195,
@@ -24,9 +26,30 @@ class DetailScreen extends React.Component {
       },
     };
   }
-  
+
+  async componentDidMount() {
+    Geocoder.setApiKey('AIzaSyA77nerNziNxlXfQYd9QtwkaflB9jpppUo');
+    let result = await Geocoder.getFromLocation(this.props.detailReview.country);
+    this.setState({
+      isMapLoaded: true,
+      initialRegion: {
+        latitude: result.results[0].geometry.location.lat,
+        longitude: result.results[0].geometry.location.lng,
+        latitudeDelta: MAP_ZOOM_RATE,
+        longitudeDelta: MAP_ZOOM_RATE * 2.25
+      }
+    });
+  }
 
   render() {
+    if (this.state.isMapLoaded === false) {
+      return (
+        <View style={{ flex: 1, justifyContent: 'center' }}>
+          <ActivityIndicator size="large" />
+        </View>
+      );
+    }
+
     return (
       <View style={{ flex: 1 }}>
         <ScrollView>
