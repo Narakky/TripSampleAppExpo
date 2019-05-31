@@ -1,6 +1,6 @@
 import React from 'react';
 import {
-  StyleSheet, Text, View, ScrollView,
+  StyleSheet, Text, View, ScrollView, Picker,
   LayoutAnimation, UIManager,
   Dimensions
 } from 'react-native';
@@ -50,6 +50,33 @@ class AddScreen extends React.Component {
   componentDidUpdate() {
     UIManager.setLayoutAnimationEnabledExperimental && UIManager.setLayoutAnimationEnabledExperimental(true);
     LayoutAnimation.easeInEaseOut();
+  }
+
+  renderCountryPicker() {
+    if (this.state.countryPickerVisible === true) {
+      return (
+        <Picker
+          selectedValue={ this.state.tripDetail.country }
+          onValueChange={(itemValue) => {
+            this.setState({
+              ...this.state,
+              tripDetail: {
+                ...this.state.tripDetail,
+                country: itemValue,
+              }
+            });
+          }}
+        >
+          <Picker.Item label={INITIAL_STATE.tripDetail.country} value={INITIAL_STATE.tripDetail.country} />
+          <Picker.Item label="日本" value="日本" />
+          <Picker.Item label="アメリカ" value="アメリカ" />
+          <Picker.Item label="イギリス" value="イギリス" />
+          <Picker.Item label="中国" value="中国" />
+          <Picker.Item label="アフリカ" value="アフリカ" />
+          <Picker.Item label="ブラジル" value="ブラジル" />
+        </Picker>
+      );
+    }
   }
 
   render() {
@@ -112,6 +139,7 @@ class AddScreen extends React.Component {
               dateToPickerVisible: false,
             })}
           />
+          { this.renderCountryPicker() }
         </ScrollView>
       </View>
     );
