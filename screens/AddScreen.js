@@ -1,10 +1,10 @@
 import React from 'react';
 import {
-  StyleSheet, Text, View,
+  StyleSheet, Text, View, ScrollView,
   LayoutAnimation, UIManager,
   Dimensions
 } from 'react-native';
-import { Header, Icon } from 'react-native-elements';
+import { Header, Icon, ListItem } from 'react-native-elements';
 
 // 評価ランクに関する定数
 const GREAT = 'sentiment-very-satisfied';
@@ -84,6 +84,35 @@ class AddScreen extends React.Component {
           // ヘッダタイトルとスタイル
           centerComponent={{ text: '追加', style: styles.headerStyle }}
         />
+
+        <ScrollView style={{ flex: 1 }}>
+          <ListItem
+            title="国名: "
+            subtitle={
+              <View style={styles.listItemStyle}>
+                <Text
+                  style={{
+                    fontSize: 18,
+                    color: this.state.tripDetail.country === INITIAL_STATE.tripDetail.country ? 'gray' : 'black'
+                  }}
+                >
+                  { this.state.tripDetail.country }
+                </Text>
+              </View>
+            }
+            // プルダウンメニューが開いていれば上矢印、閉じていれば下矢印
+            rightIcon={{ name: this.state.countryPickerVisible === true ? 'keyboard-arrow-up' : 'keyboard-arrow-down' }}
+            // 項目欄ListItemがタップされた時
+            onPress={() => this.setState({
+              // 国選択ピッカーの表示切り替え
+              countryPickerVisible: !this.state.countryPickerVisible,
+              // 出国日選択プルダウンは閉じる
+              dateFromPickerVisible: false,
+              // 帰国日選択プルダウンは閉じる
+              dateToPickerVisible: false,
+            })}
+          />
+        </ScrollView>
       </View>
     );
   }
@@ -94,7 +123,11 @@ const styles = StyleSheet.create({
     color: '#fff',
     fontSize: 18,
     fontWeight: 'bold',
-  }
+  },
+  listItemStyle: {
+    paddingTop: 5,
+    paddingLeft: 20,
+  },
 });
 
 export default AddScreen;
