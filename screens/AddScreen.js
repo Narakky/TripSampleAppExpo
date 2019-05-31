@@ -56,11 +56,45 @@ class AddScreen extends React.Component {
     return (
       <View style={{ flex: 1 }}>
         <Header
-        
+          // ステータスバーの色
+          statusBarProps={{ barStyle: 'light-content' }}
+          // ヘッダーの色
+          backgroundColor="deepskyblue"
+          // 左上のアイコン
+          leftComponent={{
+            icon: 'close',
+            color: '#fff',
+            onPress: () => {
+              this.setState({
+                ...INITIAL_STATE,
+                tripDetail: {
+                  ...INITIAL_STATE.tripDetail,
+                  imageURIs: [
+                    require("../assets/add_image_placeholder.png"),
+                    require("../assets/add_image_placeholder.png"),
+                    require('../assets/add_image_placeholder.png'),
+                  ],
+                }
+              });
+
+              // ホームに戻る
+              this.props.navigation.navigate('home');
+            }
+          }}
+          // ヘッダタイトルとスタイル
+          centerComponent={{ text: '追加', style: styles.headerStyle }}
         />
       </View>
     );
   }
 }
+
+const styles = StyleSheet.create({
+  headerStyle: {
+    color: '#fff',
+    fontSize: 18,
+    fontWeight: 'bold',
+  }
+});
 
 export default AddScreen;
