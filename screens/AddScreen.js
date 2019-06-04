@@ -1,10 +1,11 @@
 import React from 'react';
 import {
-  StyleSheet, Text, View, ScrollView, Picker,
+  StyleSheet, Text, View, ScrollView, Picker, DatePickerIOS,
   LayoutAnimation, UIManager,
-  Dimensions
+  Dimensions, Platform,
 } from 'react-native';
 import { Header, Icon, ListItem } from 'react-native-elements';
+import DatePicker from 'react-native-datepicker';
 
 // 評価ランクに関する定数
 const GREAT = 'sentiment-very-satisfied';
@@ -52,6 +53,7 @@ class AddScreen extends React.Component {
     LayoutAnimation.easeInEaseOut();
   }
 
+  // 国名選択用ピッカーを描画する
   renderCountryPicker() {
     if (this.state.countryPickerVisible === true) {
       return (
@@ -76,6 +78,64 @@ class AddScreen extends React.Component {
           <Picker.Item label="ブラジル" value="ブラジル" />
         </Picker>
       );
+    }
+  }
+
+  // 日付from用ピッカーを描画する
+  renderDateFromPicker() {
+    if (this.state.dateFromPickerVisible === true) {
+      switch (Platform.OS) {
+        case 'ios':
+          return (
+            <DatePickerIOS
+              mode="date"
+              date={new Date(this.state.chosenDateFrom)}
+              onDateChange={(date) => {
+                const dateString = date.toLocaleString('ja');
+
+                this.setState({
+                  tripDetail: {
+                    ...this.state.tripDetail,
+                    dateFrom: dateString.split(' ')[0], // 2019/06/04 17:00:00 -> 2019/06/04
+                  },
+                  chosenDateFrom: dateString,
+                  chosenDateTo: dateString, // 初期選択付
+                });
+              }}
+            />
+          );
+      
+        case 'android':
+          return (
+            <DatePicker
+              mode="date"
+              date={new Date(this.state.chosenDateFrom)}
+              format='YYYY-MM-DD'
+              confirmBtnText="OK"
+              cancelBtnText="キャンセル"
+              onDateChange={(date) => {
+                // date = 2019-06-04 17:00
+
+                // 2019-06-04 17:00 -> 2019-06-04 17:00:00
+                let dateString = `${date}:00`;
+                // 2019-06-04 17:00:00 -> 2019/06/04 17:00:00 
+                dateString = dateString.replace(/-/g, '/');
+
+                this.setState({
+                  tripDetail: {
+                    ...this.state.tripDetail,
+                    dateFrom: dateString.split(' ')[0],
+                  },
+                  chosenDateFrom: dateString,
+                  chosenDateTo: dateString,
+                });
+              }}
+            />
+          );
+
+        default:
+          return <View />;
+      }
     }
   }
 
@@ -162,6 +222,7 @@ class AddScreen extends React.Component {
               dateToPickerVisible: false,
             })}
           />
+          {this.renderDateFromPicker()}
         </ScrollView>
       </View>
     );
