@@ -139,6 +139,59 @@ class AddScreen extends React.Component {
     }
   }
 
+  renderDateToPicker() {
+    if (this.state.dateToPickerVisible === true) {
+      switch (Platform.OS) {
+        case 'ios':
+          return (
+            <DatePickerIOS
+              mode="date"
+              minimumDate={new Date(this.state.chosenDateFrom)}
+              date={new Date(this.state.chosenDateTo)}
+              onDateChange={(date) => {
+                const dateString = date.toLocaleString('ja');
+
+                this.setState({
+                  tripDetail: {
+                    ...this.state.tripDetail,
+                    dateTo: dateString.split(' ')[0],
+                  },
+                  chosenDateTo: dateString,
+                });
+              }}
+            />
+          );
+      
+        case 'android':
+          return (
+            <DatePicker
+              mode="date"
+              minDate={new Date(this.state.chosenDateFrom)}
+              date={new Date(this.state.chosenDateTo)}
+              format="YYYY-MM-DD"
+              confirmBtnText="OK"
+              cancelBtnText="キャンセル"
+              onDateChange={(date) => {
+                let dateString = `${date}:00`;
+                dateString = dateString.replace(/-/g, '/');
+
+                this.setState({
+                  tripDetail: {
+                    ...this.state.tripDetail,
+                    dateTo: dateString.split(' ')[0],
+                  },
+                  chosenDateTo: dateString,
+                });
+              }}
+            />
+          );
+
+        default:
+          return <View />
+      }
+    }
+  }
+
   render() {
     return (
       <View style={{ flex: 1 }}>
@@ -223,6 +276,30 @@ class AddScreen extends React.Component {
             })}
           />
           {this.renderDateFromPicker()}
+
+          <ListItem
+            title=""
+            subtitle={
+              <View style={styles.listItemStyle}>
+                <Text
+                  style={{
+                    fontSize: 18,
+                    color: this.state.tripDetail.dateTo === INITIAL_STATE.tripDetail.dateTo ? 'gray' : 'black',
+                  }}
+                >
+                  {this.state.tripDetail.dateTo}
+                </Text>
+              </View>
+            }
+            rightIcon={{ name: this.state.dateToPickerVisible ? 'keyboard-arrow-up' : 'keyboard-arrow-down' }}
+            onPress={() => this.setState({
+              countryPickerVisible: false,
+              dateFromPickerVisible: false,
+              dateToPickerVisible: !this.state.dateToPickerVisible,
+            })}
+          />
+          {this.renderDateToPicker()}
+
         </ScrollView>
       </View>
     );
