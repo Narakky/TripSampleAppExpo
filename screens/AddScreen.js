@@ -140,6 +140,28 @@ class AddScreen extends React.Component {
             })}
           />
           { this.renderCountryPicker() }
+
+          <ListItem
+            title="日付: "
+            subtitle={
+              <View style={styles.listItemStyle}>
+                <Text
+                  style={{
+                    fontSize: 18,
+                    color: this.state.tripDetail.dateFrom === INITIAL_STATE.tripDetail.dateFrom ? 'gray' : 'black'
+                  }}
+                >
+                  {this.state.tripDetail.dateFrom}
+                </Text>
+              </View>
+            }
+            rightIcon={{ name: this.state.dateFromPickerVisible ? 'keyboard-arrow-up' : 'keyboard-arrow-down' }}
+            onPress={() => this.setState({
+              countryPickerVisible: false,
+              dateFromPickerVisible: !this.state.dateFromPickerVisible,
+              dateToPickerVisible: false,
+            })}
+          />
         </ScrollView>
       </View>
     );
