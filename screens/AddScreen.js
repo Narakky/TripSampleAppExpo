@@ -6,6 +6,8 @@ import {
 } from 'react-native';
 import { Header, Icon, ListItem } from 'react-native-elements';
 import DatePicker from 'react-native-datepicker';
+import Geocoder from 'react-native-geocoding';
+import { MapView } from 'expo';
 
 // 評価ランクに関する定数
 const GREAT = 'sentiment-very-satisfied';
@@ -41,6 +43,8 @@ const INITIAL_STATE = {
   },
 };
 
+const SCREEN_WIDTH = Dimensions.get('window').width;
+
 class AddScreen extends React.Component {
   constructor(props) {
     super(props);
@@ -58,13 +62,22 @@ class AddScreen extends React.Component {
     if (this.state.countryPickerVisible === true) {
       return (
         <Picker
-          selectedValue={ this.state.tripDetail.country }
-          onValueChange={(itemValue) => {
+          selectedValue={this.state.tripDetail.country}
+          onValueChange={async (itemValue) => {
+            Geocoder.setApiKey('AIzaSyA77nerNziNxlXfQYd9QtwkaflB9jpppUo');
+            let result = await Geocoder.getFromLocation(itemValue);
+
             this.setState({
               ...this.state,
               tripDetail: {
                 ...this.state.tripDetail,
                 country: itemValue,
+              },
+              initialRegion: {
+                latitude: result.results[0].geometry.location.lat,
+                longitude: result.results[0].geometry.location.lng,
+                latitudeDelta: MAP_ZOOM_RATE,
+                longitudeDelta: MAP_ZOOM_RATE * 2.25,
               }
             });
           }}
@@ -192,6 +205,23 @@ class AddScreen extends React.Component {
     }
   }
 
+  // 地図を描画する
+  renderMap() {
+    // 国が選択された時かつ国選択プルダウンが閉じた時
+    if (this.state.tripDetail.country !== INITIAL_STATE.tripDetail.country &&
+      this.state.countryPickerVisible === false) {
+        // 地図を描画する
+        return (
+          <MapView
+            style={{ height: SCREEN_WIDTH }}
+            scrollEnabled={false}
+            cacheEnabled={Platform.OS === 'android'}
+            initialRegion={this.state.initialRegion}
+          />
+        );
+    }
+  }
+
   render() {
     return (
       <View style={{ flex: 1 }}>
@@ -300,6 +330,7 @@ class AddScreen extends React.Component {
           />
           {this.renderDateToPicker()}
 
+          {this.renderMap()}
         </ScrollView>
       </View>
     );
