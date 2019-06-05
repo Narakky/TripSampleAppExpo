@@ -243,7 +243,28 @@ class AddScreen extends React.Component {
       await AsyncStorage.setItem('cameraRollPermission', permission.status);
     }
 
-    
+    // カメラロールを起動する
+    let result = await ImagePicker.launchImageLibraryAsync({
+      // 画像のみ選択（ビデオは選択不可）
+      mediaTypes: ImagePicker.MediaTypeOptions.Images,
+      // 編集可能
+      allowsEditing: true,
+    });
+
+    // ユーザが画像選択をキャンセルしなかった場合
+    if (!result.cancelled) {
+      const newImageURIs = this.state.tripDetail.imageURIs;
+      newImageURIs[index] = { uri: request.uri };
+
+      // 新たな配列をstateにセットする
+      this.setState({
+        ...this.state,
+        tripDetail: {
+          ...this.state.tripDetail,
+          imageURIs: newImageURIs,
+        }
+      });
+    }
   }
 
   // 写真選択
@@ -257,6 +278,7 @@ class AddScreen extends React.Component {
               return (
                 <TouchableOpacity
                   key={index}
+                  onPress={() => this.onImagePress(index)}
                 >
                   <Image
                     style={{
