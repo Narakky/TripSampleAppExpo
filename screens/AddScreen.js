@@ -3,12 +3,12 @@ import {
   StyleSheet, Text, View, ScrollView, Picker, DatePickerIOS,
   TouchableOpacity, Image,
   LayoutAnimation, UIManager,
-  Dimensions, Platform,
+  Dimensions, Platform, AsyncStorage,
 } from 'react-native';
 import { Header, Icon, ListItem } from 'react-native-elements';
 import DatePicker from 'react-native-datepicker';
 import Geocoder from 'react-native-geocoding';
-import { MapView } from 'expo';
+import { MapView, Permissions, ImagePicker, } from 'expo';
 
 // 評価ランクに関する定数
 const GREAT = 'sentiment-very-satisfied';
@@ -221,6 +221,29 @@ class AddScreen extends React.Component {
           />
         );
     }
+  }
+
+  // 画像タップ時
+  onImagePress() = async (index) => {
+    // スマホ内に保存されているカメラロールアクセス権を読み取る
+    let cameraRollPermission = await AsyncStorage.getItem('cameraRollPermission');
+    
+    // 未許可の場合
+    if (cameraRollPermission != 'granted') {
+      // 許可を取る
+      let permission = await Permissions.askAsync(Permissions.CAMERA_ROLL);
+
+      // ユーザが許可しなかった場合
+      if (permission.status !== 'granted') {
+        // 何もしない
+        return;
+      }
+      
+      // カメラロールアクセス状況をスマホ内に保存する
+      await AsyncStorage.setItem('cameraRollPermission', permission.status);
+    }
+
+    
   }
 
   // 写真選択
