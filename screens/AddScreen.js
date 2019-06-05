@@ -1,6 +1,7 @@
 import React from 'react';
 import {
   StyleSheet, Text, View, ScrollView, Picker, DatePickerIOS,
+  TouchableOpacity, Image,
   LayoutAnimation, UIManager,
   Dimensions, Platform,
 } from 'react-native';
@@ -222,6 +223,33 @@ class AddScreen extends React.Component {
     }
   }
 
+  // 写真選択
+  renderImagePicker() {
+    // 国が選択された時かつ、国選択プルダウンが閉じた場合
+    if (this.state.tripDetail.country !== INITIAL_STATE.tripDetail.country &&
+      this.state.countryPickerVisible === false) {
+        return (
+          <View style={{ flexDirection: 'row' }}>
+            {this.state.tripDetail.imageURIs.map((imageURI, index) => {
+              return (
+                <TouchableOpacity
+                  key={index}
+                >
+                  <Image
+                    style={{
+                      width: SCREEN_WIDTH / this.state.tripDetail.imageURIs.length,
+                      height: SCREEN_WIDTH / this.state.tripDetail.imageURIs.length,
+                    }}
+                    source={imageURI}
+                  />
+                </TouchableOpacity>
+              );
+            })}
+          </View>
+        );
+    }
+  }
+
   render() {
     return (
       <View style={{ flex: 1 }}>
@@ -331,6 +359,8 @@ class AddScreen extends React.Component {
           {this.renderDateToPicker()}
 
           {this.renderMap()}
+
+          {this.renderImagePicker()}
         </ScrollView>
       </View>
     );
