@@ -5,7 +5,7 @@ import {
   LayoutAnimation, UIManager,
   Dimensions, Platform, AsyncStorage,
 } from 'react-native';
-import { Header, Icon, ListItem } from 'react-native-elements';
+import { Header, Icon, ListItem, Button } from 'react-native-elements';
 import DatePicker from 'react-native-datepicker';
 import Geocoder from 'react-native-geocoding';
 import { MapView, Permissions, ImagePicker, } from 'expo';
@@ -301,6 +301,7 @@ class AddScreen extends React.Component {
     }
   }
 
+  // 評価選択用ボタンを表示する
   renderReviewButtons() {
     // 国が選択された時かつ、国選択プルダウンメニューが閉じた時
     if (this.state.tripDetail.country !== INITIAL_STATE.tripDetail.country &&
@@ -357,6 +358,31 @@ class AddScreen extends React.Component {
           </View>
         );
     }
+  }
+
+  // 追加ボタンを描画
+  renderAddButton() {
+    let isCompleted = true;
+
+    Object.keys(this.state.tripDetail).forEach((key) => {
+      if (key !== 'imageURIs' && this.state.tripDetail[key] === INITIAL_STATE.tripDetail[key]) {
+        isCompleted = false;
+      }
+    });
+
+    return (
+      <View style={{ padding: 20 }}>
+        <Button
+          title="追加"
+          color="#fff"
+          buttonStyle={{ backgroundColor: 'deepskyblue' }}
+          onPress={() => {
+            return;
+          }}
+          disabled={!isCompleted}
+        />
+      </View>
+    );
   }
 
   render() {
@@ -473,6 +499,7 @@ class AddScreen extends React.Component {
 
           {this.renderReviewButtons()}
 
+          {this.renderAddButton()}
         </ScrollView>
       </View>
     );
