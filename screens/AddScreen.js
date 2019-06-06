@@ -224,7 +224,7 @@ class AddScreen extends React.Component {
   }
 
   // 画像タップ時
-  onImagePress() = async (index) => {
+  onImagePress = async (index) => {
     // スマホ内に保存されているカメラロールアクセス権を読み取る
     let cameraRollPermission = await AsyncStorage.getItem('cameraRollPermission');
     
@@ -254,7 +254,7 @@ class AddScreen extends React.Component {
     // ユーザが画像選択をキャンセルしなかった場合
     if (!result.cancelled) {
       const newImageURIs = this.state.tripDetail.imageURIs;
-      newImageURIs[index] = { uri: request.uri };
+      newImageURIs[index] = { uri: result.uri };
 
       // 新たな配列をstateにセットする
       this.setState({
