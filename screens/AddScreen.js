@@ -12,6 +12,12 @@ import { MapView, Permissions, ImagePicker, } from 'expo';
 
 // 評価ランクに関する定数
 const GREAT = 'sentiment-very-satisfied';
+const GREAT_COLOR = 'red';
+const GOOD = 'sentiment-satisfied';
+const GOOD_COLOR = 'orange';
+const POOR = 'sentiment-dissatisfied';
+const POOR_COLOR = 'blue';
+
 
 // 地図のズームサイズ
 const MAP_ZOOM_RATE = 15.0;
@@ -295,6 +301,64 @@ class AddScreen extends React.Component {
     }
   }
 
+  renderReviewButtons() {
+    // 国が選択された時かつ、国選択プルダウンメニューが閉じた時
+    if (this.state.tripDetail.country !== INITIAL_STATE.tripDetail.country &&
+      this.state.countryPickerVisible === false) {
+        return (
+          <View
+            style={{
+              flexDirection: 'row',
+              justifyContent: 'center',
+              paddingTop: 10,
+            }}
+          >
+            <Icon
+              raised
+              size={40}
+              name={GREAT}
+              color={this.state.tripDetail.rank === GREAT ? GREAT_COLOR : 'gray'}
+              onPress={() => this.setState({
+                ...this.state,
+                tripDetail: {
+                  ...this.state.tripDetail,
+                  rank: GREAT,
+                }
+              })}
+            />
+
+            <Icon
+              raised
+              size={40}
+              name={GOOD}
+              color={this.state.tripDetail.rank === GOOD ? GOOD_COLOR : 'gray'}
+              onPress={() => this.setState({
+                ...this.state,
+                tripDetail: {
+                  ...this.state.tripDetail,
+                  rank: GOOD,
+                }
+              })}
+            />
+
+            <Icon
+              raised
+              size={40}
+              name={POOR}
+              color={this.state.tripDetail.rank === POOR ? POOR_COLOR : 'gray'}
+              onPress={() => this.setState({
+                ...this.state,
+                tripDetail: {
+                  ...this.state.tripDetail,
+                  rank: POOR,
+                }
+              })}
+            />
+          </View>
+        );
+    }
+  }
+
   render() {
     return (
       <View style={{ flex: 1 }}>
@@ -406,6 +470,9 @@ class AddScreen extends React.Component {
           {this.renderMap()}
 
           {this.renderImagePicker()}
+
+          {this.renderReviewButtons()}
+
         </ScrollView>
       </View>
     );
