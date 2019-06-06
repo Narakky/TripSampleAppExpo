@@ -9,6 +9,9 @@ import { Header, Icon, ListItem, Button } from 'react-native-elements';
 import DatePicker from 'react-native-datepicker';
 import Geocoder from 'react-native-geocoding';
 import { MapView, Permissions, ImagePicker, } from 'expo';
+import { connect } from 'react-redux';
+
+import * as actions from '../actions';
 
 // 評価ランクに関する定数
 const GREAT = 'sentiment-very-satisfied';
@@ -360,6 +363,59 @@ class AddScreen extends React.Component {
     }
   }
 
+  // 追加ボタンタップ時の処理
+  onAddButtonPress = async () => {
+    const newImageURIs = [];
+    for (let i = 0; i < this.state.tripDetail.imageURIs.length; i++) {
+      if (this.state.tripDetail.imageURIs[i] !== require('../assets/add_image_placeholder.png')) {
+        newImageURIs.push(this.state.tripDetail.imageURIs[i]);
+      }
+    }
+
+    // 添付されている写真のURIだけを持つtripDetailをつくる
+    const tripDetail = this.state.tripDetail;
+    tripDetail.imageURIs = newImageURIs;
+
+    // スマホ内に保存済みの旅行情報を読み取る
+    let stringifiedAllReviews = await AsyncStorage.getItem('allReviews');
+    let allReviews = JSON.parse(stringifiedAllReviews);
+
+    // まだ1つも旅行情報が存在しない場合
+    if (allReviews === null) {
+      // からの配列をセットする
+      allReviews = [];
+    }
+
+    // 今回登録しようとしている旅行情報を末尾にセットする
+    allReviews.push(tripDetail);
+
+    try {
+      // 一旦トライする
+      await AsyncStorage.setItem('allReviews', JSON.stringify(allReviews));
+    } catch (e) {
+      console.warn(e);
+    }
+
+    // ActionCreatorを起動してHomeScreenを再描画させる
+    this.props.fetchAllReviews();
+
+    // stateをリセットする
+    this.setState({
+      ...INITIAL_STATE,
+      tripDetail: {
+        ...INITIAL_STATE.tripDetail,
+        imageURIs: [
+          require('../assets/add_image_placeholder.png'),
+          require('../assets/add_image_placeholder.png'),
+          require('../assets/add_image_placeholder.png'),
+        ],
+      },
+    });
+
+    // HomeScreenに遷移する
+    this.props.navigation.navigate('home');
+  }
+
   // 追加ボタンを描画
   renderAddButton() {
     let isCompleted = true;
@@ -376,9 +432,7 @@ class AddScreen extends React.Component {
           title="追加"
           color="#fff"
           buttonStyle={{ backgroundColor: 'deepskyblue' }}
-          onPress={() => {
-            return;
-          }}
+          onPress={() => this.onAddButtonPress()}
           disabled={!isCompleted}
         />
       </View>
@@ -518,4 +572,9 @@ const styles = StyleSheet.create({
   },
 });
 
-export default AddScreen;
+const mapStateToProps = (state) => {
+  return {
+    allReviews: state.review.allReviews,
+  };
+};
+export default connect(mapStateToProps, actions)(AddScreen);
